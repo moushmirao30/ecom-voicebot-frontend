@@ -6,6 +6,7 @@ import { useRoomContext } from '@livekit/components-react';
 import {
   ChatCircleIcon,
   CheckIcon,
+  MagnifyingGlassIcon,
   MinusIcon,
   PlusIcon,
   ReceiptIcon,
@@ -397,10 +398,46 @@ function OrderCard({ order }: { order: Order }) {
   );
 }
 
+function NoResults({ query }: { query: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: 'easeOut' }}
+      className="flex h-full flex-col items-center justify-center gap-4 px-6 py-16 text-center"
+    >
+      <div className="relative grid size-14 place-content-center">
+        <span className="bg-bot/15 absolute inset-0 rounded-full blur-lg" />
+        <span className="border-border/60 bg-secondary/60 relative grid size-14 place-content-center rounded-full border">
+          <MagnifyingGlassIcon weight="bold" className="text-muted-foreground size-6" />
+        </span>
+      </div>
+      <div className="flex flex-col gap-1">
+        <h3 className="text-sm font-semibold">No matches found</h3>
+        <p className="text-muted-foreground/80 max-w-56 text-xs leading-relaxed">
+          {query ? (
+            <>
+              Max couldn&apos;t find anything for{' '}
+              <span className="text-foreground font-medium">“{query}”</span>.
+            </>
+          ) : (
+            "Max couldn't find anything for that search."
+          )}
+        </p>
+      </div>
+      <span className="text-muted-foreground/70 border-border/60 bg-popover/40 flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[10px] tracking-wide">
+        <SparkleIcon weight="fill" className="text-voice size-3" />
+        Try different keywords or ask Max to browse a category
+      </span>
+    </motion.div>
+  );
+}
+
 export function ProductPanel() {
   const room = useRoomContext();
   const [products, setProducts] = useState<Product[]>([]);
   const [query, setQuery] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
   const [order, setOrder] = useState<Order | null>(null);
   const [view, setView] = useState<'products' | 'order'>('products');
   const [open, setOpen] = useState(false);
@@ -411,9 +448,10 @@ export function ProductPanel() {
     const onProducts = async (reader: { readAll: () => Promise<string> }) => {
       try {
         const data = JSON.parse(await reader.readAll());
-        if (Array.isArray(data.products) && data.products.length > 0) {
+        if (Array.isArray(data.products)) {
           setProducts(data.products);
           setQuery(typeof data.query === 'string' ? data.query : '');
+          setHasSearched(true);
           setView('products');
           setOpen(true);
         }
@@ -498,8 +536,8 @@ export function ProductPanel() {
   }, [cart, count, total, room]);
 
   const hasProducts = products.length > 0;
-  const hasContent = hasProducts || order !== null;
-  const showTabs = hasProducts && order !== null;
+  const hasContent = hasSearched || order !== null;
+  const showTabs = hasSearched && order !== null;
 
   return (
     <>
@@ -599,6 +637,8 @@ export function ProductPanel() {
             <div className="min-h-0 flex-1 overflow-y-auto p-4">
               {view === 'order' && order ? (
                 <OrderCard order={order} />
+              ) : !hasProducts ? (
+                <NoResults query={query} />
               ) : (
                 <div className="grid grid-cols-2 gap-3">
                   {products.map((p, i) => (
