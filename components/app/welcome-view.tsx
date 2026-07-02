@@ -1,22 +1,22 @@
+'use client';
+
+import { motion } from 'motion/react';
+import {
+  ArrowRightIcon,
+  MagnifyingGlassIcon,
+  MicrophoneIcon,
+  PackageIcon,
+  ShieldCheckIcon,
+  TagIcon,
+} from '@phosphor-icons/react/dist/ssr';
 import { Button } from '@/components/ui/button';
 
-function WelcomeImage() {
-  return (
-    <svg
-      width="64"
-      height="64"
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className="text-fg0 mb-4 size-16"
-    >
-      <path
-        d="M15 24V40C15 40.7957 14.6839 41.5587 14.1213 42.1213C13.5587 42.6839 12.7956 43 12 43C11.2044 43 10.4413 42.6839 9.87868 42.1213C9.31607 41.5587 9 40.7957 9 40V24C9 23.2044 9.31607 22.4413 9.87868 21.8787C10.4413 21.3161 11.2044 21 12 21C12.7956 21 13.5587 21.3161 14.1213 21.8787C14.6839 22.4413 15 23.2044 15 24ZM22 5C21.2044 5 20.4413 5.31607 19.8787 5.87868C19.3161 6.44129 19 7.20435 19 8V56C19 56.7957 19.3161 57.5587 19.8787 58.1213C20.4413 58.6839 21.2044 59 22 59C22.7956 59 23.5587 58.6839 24.1213 58.1213C24.6839 57.5587 25 56.7957 25 56V8C25 7.20435 24.6839 6.44129 24.1213 5.87868C23.5587 5.31607 22.7956 5 22 5ZM32 13C31.2044 13 30.4413 13.3161 29.8787 13.8787C29.3161 14.4413 29 15.2044 29 16V48C29 48.7957 29.3161 49.5587 29.8787 50.1213C30.4413 50.6839 31.2044 51 32 51C32.7956 51 33.5587 50.6839 34.1213 50.1213C34.6839 49.5587 35 48.7957 35 48V16C35 15.2044 34.6839 14.4413 34.1213 13.8787C33.5587 13.3161 32.7956 13 32 13ZM42 21C41.2043 21 40.4413 21.3161 39.8787 21.8787C39.3161 22.4413 39 23.2044 39 24V40C39 40.7957 39.3161 41.5587 39.8787 42.1213C40.4413 42.6839 41.2043 43 42 43C42.7957 43 43.5587 42.6839 44.1213 42.1213C44.6839 41.5587 45 40.7957 45 40V24C45 23.2044 44.6839 22.4413 44.1213 21.8787C43.5587 21.3161 42.7957 21 42 21ZM52 17C51.2043 17 50.4413 17.3161 49.8787 17.8787C49.3161 18.4413 49 19.2044 49 20V44C49 44.7957 49.3161 45.5587 49.8787 46.1213C50.4413 46.6839 51.2043 47 52 47C52.7957 47 53.5587 46.6839 54.1213 46.1213C54.6839 45.5587 55 44.7957 55 44V20C55 19.2044 54.6839 18.4413 54.1213 17.8787C53.5587 17.3161 52.7957 17 52 17Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}
+const FEATURES = [
+  { icon: MagnifyingGlassIcon, label: 'Search' },
+  { icon: TagIcon, label: 'Stock & Price' },
+  { icon: PackageIcon, label: 'Track orders' },
+  { icon: ShieldCheckIcon, label: 'Policies' },
+];
 
 interface WelcomeViewProps {
   startButtonText: string;
@@ -29,37 +29,135 @@ export const WelcomeView = ({
   ref,
 }: React.ComponentProps<'div'> & WelcomeViewProps) => {
   return (
-    <div ref={ref}>
-      <section className="bg-background flex flex-col items-center justify-center text-center">
-        <WelcomeImage />
+    <div ref={ref} className="bg-background fixed inset-0 overflow-hidden">
+      {/* ---- Ambient background ---- */}
+      <div className="pointer-events-none absolute inset-0">
+        {/* aurora blobs */}
+        <div className="bg-bot/30 animate-aurora absolute -top-32 -left-24 size-[42rem] rounded-full blur-[120px]" />
+        <div className="bg-live/20 animate-glow absolute top-1/3 -right-24 size-[34rem] rounded-full blur-[120px]" />
+        <div className="bg-cart/15 animate-float absolute -bottom-40 left-1/4 size-[36rem] rounded-full blur-[130px]" />
+        {/* faint grid with radial fade */}
+        <div
+          className="bg-grid-faint absolute inset-0 opacity-60"
+          style={{
+            maskImage: 'radial-gradient(ellipse 60% 50% at 50% 40%, black, transparent 75%)',
+            WebkitMaskImage: 'radial-gradient(ellipse 60% 50% at 50% 40%, black, transparent 75%)',
+          }}
+        />
+        {/* bottom vignette */}
+        <div className="from-background absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t to-transparent" />
+      </div>
 
-        <p className="text-foreground max-w-prose pt-1 leading-6 font-medium">
-          Chat live with your voice AI agent
-        </p>
-
-        <Button
-          size="lg"
-          onClick={onStartCall}
-          className="mt-6 w-64 rounded-full font-mono text-xs font-bold tracking-wider uppercase"
+      {/* ---- Content ---- */}
+      <section className="relative z-10 mx-auto flex min-h-svh max-w-2xl flex-col items-center justify-center px-6 text-center">
+        {/* Eyebrow */}
+        <motion.span
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.5, ease: 'easeOut' }}
+          className="border-border/60 bg-popover/40 text-muted-foreground mb-8 inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-[10px] font-semibold tracking-[0.18em] uppercase backdrop-blur-md"
         >
-          {startButtonText}
-        </Button>
+          <span className="bg-voice size-1.5 rounded-full" />
+          ShopMax Voice Assistant
+        </motion.span>
+
+        {/* Mic orb — the persistent, primary control motif */}
+        <motion.button
+          type="button"
+          onClick={onStartCall}
+          aria-label={startButtonText}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.18, type: 'spring', stiffness: 260, damping: 18 }}
+          className="group relative mb-9 grid size-24 place-content-center"
+        >
+          {/* pulsing rings */}
+          <span className="border-bot/40 animate-ring-pulse absolute inset-0 rounded-full border" />
+          <span
+            className="border-bot/30 animate-ring-pulse absolute inset-0 rounded-full border"
+            style={{ animationDelay: '0.8s' }}
+          />
+          {/* glow */}
+          <span className="bg-bot/40 group-hover:bg-bot/60 absolute inset-2 rounded-full blur-xl transition-all duration-300" />
+          {/* core */}
+          <span className="from-bot shadow-bot/40 relative grid size-24 place-content-center rounded-full bg-gradient-to-br to-[#5a3ff0] shadow-2xl ring-1 ring-white/20 transition-transform duration-300 group-hover:scale-105 group-active:scale-95">
+            <MicrophoneIcon weight="fill" className="size-9 text-white" />
+          </span>
+        </motion.button>
+
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.26, duration: 0.55, ease: 'easeOut' }}
+          className="text-4xl leading-[1.05] font-extrabold tracking-tight text-balance sm:text-5xl"
+        >
+          Meet Max, your
+          <br />
+          <span className="text-gradient-bot font-serif text-5xl italic sm:text-6xl">
+            voice shopping concierge.
+          </span>
+        </motion.h1>
+
+        {/* Subhead */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.55, ease: 'easeOut' }}
+          className="text-muted-foreground mt-5 max-w-md text-base leading-relaxed text-pretty"
+        >
+          Search the catalog, check stock and prices, track orders, and ask about store policies —
+          just by speaking. No typing, no menus.
+        </motion.p>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5, ease: 'easeOut' }}
+        >
+          <Button
+            size="lg"
+            onClick={onStartCall}
+            className="from-bot group shadow-bot/25 hover:shadow-bot/40 mt-9 h-auto rounded-full bg-gradient-to-r to-[#6a49f5] px-8 py-6 text-sm font-semibold tracking-wide text-white shadow-lg transition-all duration-300 hover:scale-105"
+          >
+            <MicrophoneIcon weight="fill" className="size-4" />
+            {startButtonText}
+            <ArrowRightIcon
+              weight="bold"
+              className="size-4 transition-transform duration-300 group-hover:translate-x-1"
+            />
+          </Button>
+        </motion.div>
+
+        {/* Feature chips */}
+        <motion.ul
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.5, ease: 'easeOut' }}
+          className="mt-10 flex flex-wrap items-center justify-center gap-2"
+        >
+          {FEATURES.map(({ icon: Icon, label }) => (
+            <li
+              key={label}
+              className="border-border/60 bg-popover/30 text-muted-foreground hover:text-foreground hover:border-bot/40 flex items-center gap-2 rounded-full border px-3.5 py-2 font-mono text-[11px] font-medium tracking-wide backdrop-blur-sm transition-colors"
+            >
+              <Icon weight="bold" className="text-bot size-3.5" />
+              {label}
+            </li>
+          ))}
+        </motion.ul>
       </section>
 
-      <div className="fixed bottom-5 left-0 flex w-full items-center justify-center">
-        <p className="text-muted-foreground max-w-prose pt-1 text-xs leading-5 font-normal text-pretty md:text-sm">
-          Need help getting set up? Check out the{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://docs.livekit.io/agents/start/voice-ai/"
-            className="underline"
-          >
-            Voice AI quickstart
-          </a>
-          .
-        </p>
-      </div>
+      {/* Footer */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.6 }}
+        className="text-muted-foreground/50 absolute bottom-6 left-0 w-full text-center font-mono text-[10px] tracking-[0.14em] uppercase"
+      >
+        Secured via LiveKit WebRTC · Deepgram · Cartesia
+      </motion.p>
     </div>
   );
 };

@@ -33,36 +33,26 @@ export interface AppConfig {
 }
 
 export const APP_CONFIG_DEFAULTS: AppConfig = {
-  companyName: 'LiveKit',
-  pageTitle: 'LiveKit Voice Agent',
-  pageDescription: 'A voice agent built with LiveKit',
+  companyName: 'ShopMax',
+  pageTitle: 'ShopMax Voice Assistant',
+  pageDescription: 'Your premium personal AI assistant for ShopMax e-commerce store',
 
   supportsChatInput: true,
-  supportsVideoInput: true,
-  supportsScreenShare: true,
+  supportsVideoInput: false,
+  supportsScreenShare: false,
   isPreConnectBufferEnabled: true,
 
-  logo: '/lk-logo.svg',
-  accent: '#002cf2',
-  logoDark: '/lk-logo-dark.svg',
-  accentDark: '#1fd5f9',
-  startButtonText: 'Start call',
+  logo: '/logo.svg',
+  accent: '#7C5CFF',
+  logoDark: '/logo.svg',
+  accentDark: '#7C5CFF',
+  startButtonText: 'Start talking',
 
   // optional: audio visualization configuration
-  // audioVisualizerType: 'bar',
-  // audioVisualizerColor: '#002cf2',
-  // audioVisualizerColorDark: '#1fd5f9',
-  // audioVisualizerColorShift: 0.3,
-  // audioVisualizerBarCount: 5,
-  // audioVisualizerType: 'radial',
-  // audioVisualizerRadialBarCount: 24,
-  // audioVisualizerRadialRadius: 100,
-  // audioVisualizerType: 'grid',
-  // audioVisualizerGridRowCount: 25,
-  // audioVisualizerGridColumnCount: 25,
-  // audioVisualizerType: 'wave',
-  // audioVisualizerWaveLineWidth: 3,
-  // audioVisualizerType: 'aura',
+  audioVisualizerType: 'aura',
+  audioVisualizerColor: '#7C5CFF',
+  audioVisualizerColorDark: '#7C5CFF',
+  audioVisualizerColorShift: 0.5,
 
   // agent dispatch configuration
   agentName: process.env.AGENT_NAME ?? undefined,

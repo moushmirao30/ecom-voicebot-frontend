@@ -8,6 +8,8 @@ import {
   AgentControlBar,
   type AgentControlBarControls,
 } from '@/components/agents-ui/agent-control-bar';
+import { MaxPersonaBadge } from '@/components/agents-ui/max-persona-badge';
+import { ProductPanel } from '@/components/agents-ui/product-panel';
 import { Shimmer } from '@/components/ai-elements/shimmer';
 import { cn } from '@/lib/shadcn/utils';
 import { TileLayout } from './tile-view';
@@ -177,7 +179,7 @@ export function AgentSessionView_01({
 }: React.ComponentProps<'section'> & AgentSessionView_01Props) {
   const session = useSessionContext();
   const { messages } = useSessionMessages(session);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(true);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { state: agentState } = useAgent();
 
@@ -190,10 +192,7 @@ export function AgentSessionView_01({
   };
 
   useEffect(() => {
-    const lastMessage = messages.at(-1);
-    const lastMessageIsLocal = lastMessage?.from?.isLocal === true;
-
-    if (scrollAreaRef.current && lastMessageIsLocal) {
+    if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
     }
   }, [messages]);
@@ -205,6 +204,10 @@ export function AgentSessionView_01({
       {...props}
     >
       <Fade top className="absolute inset-x-4 top-0 z-10 h-40" />
+      {/* Persona chip — names the bot and mirrors its state */}
+      <div className="pointer-events-none absolute top-[72px] left-1/2 z-20 -translate-x-1/2 md:top-20">
+        <MaxPersonaBadge agentState={agentState} />
+      </div>
       {/* transcript */}
 
       <div className="absolute top-0 bottom-[135px] flex w-full flex-col md:bottom-[170px]">
@@ -215,6 +218,7 @@ export function AgentSessionView_01({
               className="flex h-full w-full flex-col gap-4 space-y-3 transition-opacity duration-300 ease-out"
             >
               <AgentChatTranscript
+                ref={scrollAreaRef}
                 agentState={agentState}
                 messages={messages}
                 className="mx-auto w-full max-w-2xl [&_.is-user>div]:rounded-[22px] [&>div>div]:px-4 [&>div>div]:pt-40 md:[&>div>div]:px-6"
@@ -269,6 +273,9 @@ export function AgentSessionView_01({
           />
         </div>
       </motion.div>
+
+      {/* Product results surfaced by the agent (product_search / stock check) */}
+      <ProductPanel />
     </section>
   );
 }
