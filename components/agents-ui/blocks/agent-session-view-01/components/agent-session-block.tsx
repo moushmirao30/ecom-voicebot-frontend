@@ -8,6 +8,7 @@ import {
   AgentControlBar,
   type AgentControlBarControls,
 } from '@/components/agents-ui/agent-control-bar';
+import { MaxPersonaBadge } from '@/components/agents-ui/max-persona-badge';
 import { ProductPanel } from '@/components/agents-ui/product-panel';
 import { Shimmer } from '@/components/ai-elements/shimmer';
 import { cn } from '@/lib/shadcn/utils';
@@ -203,6 +204,10 @@ export function AgentSessionView_01({
       {...props}
     >
       <Fade top className="absolute inset-x-4 top-0 z-10 h-40" />
+      {/* Persona chip — names the bot and mirrors its state */}
+      <div className="pointer-events-none absolute top-[72px] left-1/2 z-20 -translate-x-1/2 md:top-20">
+        <MaxPersonaBadge agentState={agentState} />
+      </div>
       {/* transcript */}
 
       <div className="absolute top-0 bottom-[135px] flex w-full flex-col md:bottom-[170px]">
