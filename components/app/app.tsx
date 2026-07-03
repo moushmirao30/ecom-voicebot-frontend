@@ -33,10 +33,13 @@ export function App({ appConfig }: AppProps) {
       : TokenSource.endpoint('/api/token');
   }, [appConfig]);
 
-  const session = useSession(
-    tokenSource,
-    appConfig.agentName ? { agentName: appConfig.agentName } : undefined
-  );
+  const session = useSession(tokenSource, {
+    // LiveKit Cloud scales the agent to zero when idle; a cold boot takes ~35s
+    // before the worker can even accept the job. The library default times out
+    // sooner and reports "Agent did not join the room".
+    agentConnectTimeoutMilliseconds: 45_000,
+    ...(appConfig.agentName ? { agentName: appConfig.agentName } : {}),
+  });
 
   return (
     <AgentSessionProvider session={session}>
