@@ -191,6 +191,16 @@ export function AgentSessionView_01({
     screenShare: supportsScreenShare,
   };
 
+  // The cloud agent scales to zero when idle; the first connect can spend
+  // ~30-40s waking a worker. Until the agent has actually joined, saying
+  // "Agent is listening" is a lie that makes the app look dead — surface the
+  // wake-up instead.
+  const agentJoined =
+    agentState === 'listening' || agentState === 'thinking' || agentState === 'speaking';
+  const displayedPreConnectMessage = agentJoined
+    ? preConnectMessage
+    : 'Max is waking up… the first start after a quiet spell can take ~30 seconds';
+
   useEffect(() => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
@@ -204,8 +214,16 @@ export function AgentSessionView_01({
       {...props}
     >
       <Fade top className="absolute inset-x-4 top-0 z-10 h-40" />
-      {/* Persona chip — names the bot and mirrors its state */}
-      <div className="pointer-events-none absolute top-[72px] left-1/2 z-20 -translate-x-1/2 md:top-20">
+      {/* Persona chip — names the bot and mirrors its state. Pinned just below
+          the visualizer tile (and layered above it, z-60 > tile z-50) so the
+          two never render on top of each other; when the chat is closed the
+          tile fills the screen center, so the chip returns to the top. */}
+      <div
+        className={cn(
+          'pointer-events-none absolute left-1/2 z-[60] -translate-x-1/2',
+          chatOpen ? 'top-[112px] md:top-[128px]' : 'top-[72px] md:top-20'
+        )}
+      >
         <MaxPersonaBadge agentState={agentState} />
       </div>
       {/* transcript */}
@@ -256,7 +274,7 @@ export function AgentSessionView_01({
                 {...SHIMMER_MOTION_PROPS}
                 className="pointer-events-none mx-auto block w-full max-w-2xl pb-4 text-center text-sm font-semibold"
               >
-                {preConnectMessage}
+                {displayedPreConnectMessage}
               </MotionMessage>
             )}
           </AnimatePresence>

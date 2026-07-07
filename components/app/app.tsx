@@ -33,13 +33,20 @@ export function App({ appConfig }: AppProps) {
       : TokenSource.endpoint('/api/token');
   }, [appConfig]);
 
-  const session = useSession(tokenSource, {
-    // LiveKit Cloud scales the agent to zero when idle; a cold boot takes ~35s
-    // before the worker can even accept the job. The library default times out
-    // sooner and reports "Agent did not join the room".
-    agentConnectTimeoutMilliseconds: 45_000,
-    ...(appConfig.agentName ? { agentName: appConfig.agentName } : {}),
-  });
+  // IMPORTANT: options must be referentially stable. An inline object literal
+  // here re-initializes useSession on every render, which loops the app in a
+  // token-fetch/connect cycle and the session never starts.
+  const sessionOptions = useMemo(
+    () => ({
+      // LiveKit Cloud scales the agent to zero when idle; a cold boot takes ~35s
+      // before the worker can even accept the job. The library default times out
+      // sooner and reports "Agent did not join the room".
+      agentConnectTimeoutMilliseconds: 45_000,
+      ...(appConfig.agentName ? { agentName: appConfig.agentName } : {}),
+    }),
+    [appConfig.agentName]
+  );
+  const session = useSession(tokenSource, sessionOptions);
 
   return (
     <AgentSessionProvider session={session}>
