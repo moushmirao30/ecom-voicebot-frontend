@@ -213,7 +213,7 @@ export function AgentSessionView_01({
       className={cn('bg-background relative z-10 h-full w-full overflow-hidden', className)}
       {...props}
     >
-      <Fade top className="absolute inset-x-4 top-0 z-10 h-40" />
+      <Fade top className="absolute inset-x-4 top-0 z-10 h-52" />
       {/* Persona chip — names the bot and mirrors its state. Pinned just below
           the visualizer tile (and layered above it, z-60 > tile z-50) so the
           two never render on top of each other; when the chat is closed the
@@ -239,7 +239,7 @@ export function AgentSessionView_01({
                 ref={scrollAreaRef}
                 agentState={agentState}
                 messages={messages}
-                className="mx-auto w-full max-w-2xl [&_.is-user>div]:rounded-[22px] [&>div>div]:px-4 [&>div>div]:pt-40 md:[&>div>div]:px-6"
+                className="mx-auto w-full max-w-2xl [&_.is-user>div]:rounded-[22px] [&>div>div]:px-4 [&>div>div]:pt-52 md:[&>div>div]:px-6"
               />
             </motion.div>
           )}
